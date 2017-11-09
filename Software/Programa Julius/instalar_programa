@@ -1,0 +1,59 @@
+************** instalar software julius ************
+sudo apt install libasound2-dev
+wget https://github.com/julius-speech/julius/archive/master.zip
+mv master.zip julius-master.zip
+unzip julius-master.zip
+cd julius-master
+sudo ./configure --with-mictype=alsa
+sudo make
+sudo make install
+
+--para testar se foi instalado corretamente:
+julius
+
+
+************ testar microfone ************
+lsusb
+arecord -l
+amixer sget Mic -c 1
+
+--aumentar para volume máximo
+amixer sset Mic 16 -c 1
+
+--ou definir volume diferente
+alsamixer
+
+export ALSADEV="plughw:1,0"
+
+
+************* testar funcionamento Julius com Quickstart-Linux *********
+cd /home/pi
+mkdir Quickstart-Linux
+cd Quickstart-Linux
+wget http://www.repository.voxforge1.org/downloads/Main/Tags/Releases/0.9.0/Julius-4.3.1-Quickstart-Linux_\(0.9.0\).tgz
+tar -xvzf Julius-4.3.1-Quickstart-Linux_\(0.9.0\).tgz
+
+--para testar
+julius -input mic -C Sample.jconf
+
+
+********** instalar e testar Rhythmbox ***************
+mkdir reproductor
+cd reproductor
+wget http://es.archive.ubuntu.com/ubuntu/pool/universe/j/julius-voxforge/julius-voxforge_0.1.1~daily20130206-0ubuntu1_all.deb
+sudo dpkg --install julius-voxforge_0.1.1~daily20130206-0ubuntu1_all.deb
+rm julius-voxforge_0.1.1~daily20130206-0ubuntu1_all.deb
+cp /usr/share/doc/julius-voxforge/examples/julian.jconf.gz ./
+gunzip julian.jconf.gz
+cp /usr/share/doc/julius-voxforge/examples/controlapp/mediaplayer* ./
+cp /usr/share/doc/julius-voxforge/examples/controlapp/command.py ./
+mkdfa.pl mediaplayer
+
+--alterar no arquivo julian.jconf
+	Substituir: -dfa sample.dfa
+		    -v sample.dict
+	Por: -dfa mediaplayer.dfa
+	     -v mediaplayer.dict
+
+export ALSADEV="plughw:1,0"
+julius -C julian.jconf | ./command.py
